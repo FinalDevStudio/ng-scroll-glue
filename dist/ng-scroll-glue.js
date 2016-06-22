@@ -1,5 +1,7 @@
 (function(angular) {
   "use strict";
+  var SCROLL = "scroll";
+  var RESIZE = "resize";
   function createActivationState($parse, attr, scope) {
     function unboundState(initValue) {
       var activated = initValue;
@@ -46,23 +48,29 @@
     }
   }
   function createDirective(module, attrName, direction) {
-    module.directive(attrName, [ "$parse", "$window", "$timeout", function($parse, $window, $timeout) {
+    module.directive(attrName, [ "$parse", "$timeout", "$window", function($parse, $timeout, $window) {
       return {
         priority: 1,
         restrict: "A",
-        link: function(scope, $el, attrs) {
-          var activationState = createActivationState($parse, attrs[attrName], scope);
+        link: function($scope, $el, $attrs) {
+          var activationState = createActivationState($parse, $attrs[attrName], $scope);
+          var $win = angular.element($window);
           var el = $el[0];
           function scrollIfGlued() {
             if (activationState.getValue() && !direction.isAttached(el)) {
               direction.scroll(el);
             }
           }
-          scope.$watch(scrollIfGlued);
-          $timeout(scrollIfGlued, 0, false);
-          $window.addEventListener("resize", scrollIfGlued, false);
-          $el.bind("scroll", function() {
+          function onElementScroll() {
             activationState.setValue(direction.isAttached(el));
+          }
+          $scope.$watch(scrollIfGlued);
+          $timeout(scrollIfGlued, 0, false);
+          $win.on(RESIZE, scrollIfGlued);
+          $el.on(SCROLL, onElementScroll);
+          $scope.$on("$destroy", function() {
+            $win.off(RESIZE, scrollIfGlued);
+            $el.off(SCROLL, onElementScroll);
           });
         }
       };
