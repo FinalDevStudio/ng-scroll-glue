@@ -1,9 +1,9 @@
 'use strict';
 
-describe('ngScroll directive', function () {
-  var $scope, $compile, $window;
+const DELAY = 100;
 
-  var delay = 100;
+describe('ngScroll directive', () => {
+  var $scope, $compile, $window;
 
   function template(value) {
     return $('<div/>', {
@@ -38,84 +38,89 @@ describe('ngScroll directive', function () {
 
   beforeEach(module('ngScrollGlue'));
 
-  beforeEach(inject(function ($injector) {
+  beforeEach(inject(($injector) => {
     $scope = $injector.get('$rootScope');
     $compile = $injector.get('$compile');
     $window = $injector.get('$window');
   }));
 
-  afterEach(function () {
+  afterEach(() => {
     $scope.$destroy();
   });
 
   function compile(template) {
-    return $compile($(template))($scope).appendTo($('body'));
+    return $compile($(template))($scope)
+      .appendTo($('body'));
   }
 
-  it('should scroll to bottom of element on changes', function (done) {
+  it('should scroll to bottom of element on changes', (done) => {
     var $element = compile(templates.simple)[0];
 
-    $scope.name = "World";
+    $scope.name = 'World';
+
     $scope.$digest();
 
     setTimeout(function () {
       expect($element.scrollTop).to.equal($element.scrollHeight - $element.clientHeight);
       done();
-    }, delay);
+    }, DELAY);
   });
 
-  it('should be deactivated if the scroll-glue attribute is set to "false"', function () {
+  it('should be deactivated if the scroll-glue attribute is set to `false`', (done) => {
     var $element = compile(templates.deactivated)[0];
 
-    $scope.name = "World";
+    $scope.name = 'World';
+
     $scope.$digest();
 
-    setTimeout(function () {
+    setTimeout(() => {
       expect($element.scrollTop).to.equal(0);
-    }, delay);
+      done();
+    }, DELAY);
   });
 
-  it('should turn off auto scroll after user scrolled manually', function (done) {
+  it('should turn off auto scroll after user scrolled manually', (done) => {
     var $element = compile(templates.simple)[0];
 
     $scope.$digest();
 
     $element.scrollTop = 0;
 
-    setTimeout(function () {
-      $scope.name = "World";
+    setTimeout(() => {
+      $scope.name = 'World';
       $scope.$digest();
 
       expect($element.scrollTop).to.equal(0);
 
       done();
-    }, delay);
+    }, DELAY);
   });
 
-  it('should turn on auto scroll after user scrolled manually to bottom of element', function (done) {
+  it('should turn on auto scroll after user scrolled manually to bottom of element', (done) => {
     var $element = compile(templates.simple)[0];
 
     $scope.$digest();
+
     $element.scrollTop = 0;
 
-    setTimeout(function () {
+    setTimeout(() => {
       $scope.$digest();
 
       expect($element.scrollTop).to.equal(0);
 
       $element.scrollTop = $element.scrollHeight;
 
-      setTimeout(function () {
+      setTimeout(() => {
         $scope.$digest();
 
         expect($element.scrollTop).to.equal($element.scrollHeight - $element.clientHeight);
 
         done();
-      }, delay);
+      }, DELAY);
     });
   });
 
-  it('should turn off when the bound value is false', function (done) {
+  it('should turn off when the bound value is false', (done) => {
     $scope.glued = true;
 
     var $element = compile(templates.withBinding)[0];
@@ -123,13 +128,13 @@ describe('ngScroll directive', function () {
     $scope.glued = false;
     $scope.$digest();
 
-    setTimeout(function () {
+    setTimeout(() => {
       expect($element.scrollTop).to.equal(0);
       done();
-    }, delay);
+    }, DELAY);
   });
 
-  it('should update the bound value', function (done) {
+  it('should update the bound value', (done) => {
     $scope.glued = true;
 
     var $element = compile(templates.withBinding)[0];
@@ -138,13 +143,13 @@ describe('ngScroll directive', function () {
 
     $element.scrollTop = 0;
 
-    setTimeout(function () {
+    setTimeout(() => {
       expect($scope.glued).to.be.false;
       done();
-    }, delay);
+    }, DELAY);
   });
 
-  it('should update the bound value in sub properties', function (done) {
+  it('should update the bound value in sub properties', (done) => {
     $scope.prop = {
       glued: true
     };
@@ -155,37 +160,37 @@ describe('ngScroll directive', function () {
 
     $element.scrollTop = 0;
 
-    setTimeout(function () {
+    setTimeout(() => {
       expect($scope.prop.glued).to.be.false;
       done();
-    }, delay);
+    }, DELAY);
   });
 
-  it('should scroll to top when using scroll-glue-top', function (done) {
+  it('should scroll to top when using scroll-glue-top', (done) => {
     var $element = compile(templates.withBindingTop)[0];
 
     $element.scrollTop = 100;
 
-    $scope.name = "World";
+    $scope.name = 'World';
     $scope.$digest();
 
-    setTimeout(function () {
+    setTimeout(() => {
       expect($element.scrollTop).to.equal($element.scrollHeight - $element.clientHeight);
       done();
-    }, delay);
+    }, DELAY);
   });
 
-  it('should scroll on window resize if glued', function (done) {
-    var event = document.createEvent("HTMLEvents");
+  it('should scroll on window resize if glued', (done) => {
+    var event = document.createEvent('HTMLEvents');
     var $element = compile(templates.simple)[0];
 
-    event.initEvent("resize", true, true);
+    event.initEvent('resize', true, true);
 
     $window.dispatchEvent(event);
 
-    setTimeout(function () {
+    setTimeout(() => {
       expect($element.scrollTop).to.equal($element.scrollHeight - $element.clientHeight);
       done();
-    }, delay);
+    }, DELAY);
   });
 });
