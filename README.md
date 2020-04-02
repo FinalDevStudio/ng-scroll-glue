@@ -1,3 +1,7 @@
+---
+### No longer maintained.
+---
+
 # ng-scroll-glue [![Build Status](https://travis-ci.org/FinalDevStudio/ng-scroll-glue.svg?branch=master)](https://travis-ci.org/FinalDevStudio/ng-scroll-glue)
 
 An AngularJS directive that automatically scrolls to the bottom of an element on changes in its scope.
